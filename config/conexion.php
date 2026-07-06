@@ -2,22 +2,33 @@
 
 class Conexion
 {
-    private static string $host = "127.0.0.1";
-    private static string $baseDatos = "bd_reservas_laboratorio";
-    private static string $usuario = "root";
-    private static string $clave = "";
-    private static int $puerto = 3307;
+    private static function obtenerVariable(string $nombre, string $valorPorDefecto): string
+    {
+        $valor = getenv($nombre);
+
+        if ($valor === false || $valor === "") {
+            return $valorPorDefecto;
+        }
+
+        return $valor;
+    }
 
     public static function conectar(): mysqli
     {
         mysqli_report(MYSQLI_REPORT_OFF);
 
+        $host = self::obtenerVariable("DB_HOST", "127.0.0.1");
+        $baseDatos = self::obtenerVariable("DB_NAME", "bd_reservas_laboratorio");
+        $usuario = self::obtenerVariable("DB_USER", "root");
+        $clave = self::obtenerVariable("DB_PASS", "");
+        $puerto = (int) self::obtenerVariable("DB_PORT", "3307");
+
         $conexion = new mysqli(
-            self::$host,
-            self::$usuario,
-            self::$clave,
-            self::$baseDatos,
-            self::$puerto
+            $host,
+            $usuario,
+            $clave,
+            $baseDatos,
+            $puerto
         );
 
         if ($conexion->connect_error) {
